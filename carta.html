@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para Liz ❤️</title>
+    <style>
+        body { 
+            margin: 0; padding: 0; background: #f3e9e2; 
+            font-family: 'Courier New', Courier, monospace; 
+            overflow: hidden; height: 100vh;
+        }
+
+        .suelo {
+            position: absolute; bottom: 0; width: 100%; height: 60px;
+            background: #76a376; z-index: 1; border-top: 4px solid #5d8a5d;
+        }
+
+        .contenedor { display: flex; width: 100%; height: 100%; position: relative; z-index: 2; }
+
+        .col-texto { flex: 1; padding: 30px; display: flex; flex-direction: column; justify-content: center; }
+        #typing { font-size: 14px; color: #333; line-height: 1.4; white-space: pre-wrap; height: 400px; overflow-y: auto; }
+        .contador { color: #ff4d6d; font-size: 16px; font-weight: bold; margin-top: 10px; }
+
+        .col-arbol { flex: 1; position: relative; display: flex; justify-content: center; align-items: flex-end; padding-bottom: 60px; }
+
+        /* SEMILLA */
+        .semilla {
+            position: absolute; width: 12px; height: 12px; background: #ff4d6d; border-radius: 50%;
+            top: -50px; left: 50%; transform: translateX(-50%);
+            animation: caer 1.5s ease-in forwards;
+        }
+        @keyframes caer { to { top: calc(100% - 70px); opacity: 0; } }
+
+        /* ARBOL CSS (NO FALLA) */
+        .tronco {
+            position: absolute; bottom: 60px; width: 12px; height: 0;
+            background: #5d4037; border-radius: 6px 6px 0 0;
+            transition: height 2s ease-out 1.5s;
+        }
+
+        .rama {
+            position: absolute; background: #5d4037; width: 6px; height: 0;
+            transform-origin: bottom; transition: height 1s ease-out;
+        }
+
+        .hoja {
+            position: absolute; font-size: 16px; opacity: 0;
+            animation: aparecer 0.8s forwards;
+        }
+        @keyframes aparecer { to { opacity: 1; transform: scale(1.2); } }
+
+        .lluvia {
+            position: absolute; font-size: 14px; top: 10%;
+            animation: caerHojas 5s linear infinite;
+        }
+        @keyframes caerHojas {
+            0% { transform: translateY(0) rotate(0); opacity: 0; }
+            10% { opacity: 1; }
+            100% { transform: translateY(600px) rotate(360deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body onclick="empezar()">
+    <audio id="musica" loop><source src="Perfect.mp3" type="audio/mpeg"></audio>
+
+    <div class="suelo"></div>
+    <div class="contenedor">
+        <div class="col-texto">
+            <div id="typing"></div>
+            <div id="reloj" class="contador"></div>
+        </div>
+        <div class="col-arbol" id="zona-arbol">
+            <div class="semilla"></div>
+            <div id="tronco" class="tronco"></div>
+        </div>
+    </div>
+
+    <script>
+        const mensaje = "Para el amor de mi vida, mi Liz:\n\nNo existen palabras suficientes para decirte lo mucho que te amo, pero esta pequeña página es un pedacito de mi corazón para ti. Si pudiera elegir un lugar seguro en todo el universo, sería siempre a tu lado, porque eres tú quien ilumina mis días y me motiva a ser mejor cada mañana.\n\nCuanto más tiempo paso contigo, más me doy cuenta de que eres el regalo más hermoso que la vida me ha dado. No importa cuántos años, días o segundos pasen; mi apoyo, mi ternura y mis ganas de verte cumplir cada uno de tus sueños estarán aquí, firmes, siempre para ti.\n\nEste contador no solo marca el tiempo, marca cada latido de mi corazón que te pertenece desde el primer día. Eres mi presente y quiero que seas siempre mi futuro.\n\nTe amo mucho amor de mi vida.\n\nMLOV";
+
+        let iniciado = false;
+        function empezar() {
+            if(iniciado) return;
+            iniciado = true;
+            
+            document.getElementById('musica').play();
+            
+            // 1. Crece tronco
+            const t = document.getElementById('tronco');
+            t.style.height = '180px';
+
+            // 2. Salen ramas y hojas
+            setTimeout(crearRamas, 2500);
+            
+            // 3. Escribir texto
+            escribir();
+            setInterval(actualizarReloj, 1000);
+            setInterval(lluviaCorazones, 500);
+        }
+
+        function crearRamas() {
+            const zona = document.getElementById('zona-arbol');
+            for(let i=0; i<8; i++) {
+                let r = document.createElement('div');
+                r.className = 'rama';
+                r.style.left = '50%';
+                r.style.bottom = (100 + (i*15)) + 'px';
+                r.style.transform = `rotate(${i%2==0 ? 40+(i*5) : -40-(i*5)}deg)`;
+                zona.appendChild(r);
+                setTimeout(() => { 
+                    r.style.height = '70px'; 
+                    crearHojas(r, i);
+                }, i * 200);
+            }
+        }
+
+        function crearHojas(rama, id) {
+            const zona = document.getElementById('zona-arbol');
+            for(let i=0; i<15; i++) {
+                setTimeout(() => {
+                    let h = document.createElement('div');
+                    h.className = 'hoja'; h.innerHTML = '❤️';
+                    h.style.left = (Math.random() * 120 + (id%2==0 ? 50 : 20)) + '%';
+                    h.style.bottom = (200 + Math.random() * 100) + 'px';
+                    h.style.color = i%2==0 ? '#ff4d6d' : '#c9184a';
+                    zona.appendChild(h);
+                }, i * 100);
+            }
+        }
+
+        function escribir() {
+            let i = 0;
+            const dest = document.getElementById("typing");
+            function type() {
+                if (i < mensaje.length) {
+                    dest.innerHTML += mensaje[i] === "\n" ? "<br>" : mensaje[i];
+                    i++; setTimeout(type, 40);
+                }
+            }
+            type();
+        }
+
+        function lluviaCorazones() {
+            const zona = document.getElementById('zona-arbol');
+            let c = document.createElement('div');
+            c.className = 'lluvia'; c.innerHTML = '❤️';
+            c.style.left = (Math.random() * 100) + '%';
+            zona.appendChild(c);
+            setTimeout(() => c.remove(), 5000);
+        }
+
+        function actualizarReloj() {
+            const diff = new Date() - new Date(2022, 3, 9);
+            const d = Math.floor(diff / 86400000);
+            const h = Math.floor((diff / 3600000) % 24);
+            const m = Math.floor((diff / 60000) % 60);
+            const s = Math.floor((diff / 1000) % 60);
+            document.getElementById("reloj").innerHTML = `${d} días ${h}h ${m}m ${s}s`;
+        }
+    </script>
+</body>
+</html>
