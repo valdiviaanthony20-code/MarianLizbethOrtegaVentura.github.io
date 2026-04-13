@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para Liz ❤️</title>
+    <style>
+        body { margin: 0; overflow: hidden; font-family: 'Arial', sans-serif; background: #fad0c4; }
+        #inicio {
+            height: 100vh; display: flex; justify-content: center; align-items: center; 
+            flex-direction: column; color: white; 
+            background: linear-gradient(135deg, #ff9a9e, #fad0c4); position: relative;
+        }
+        .luna {
+            position: absolute; width: 100px; height: 100px; background: white; 
+            border-radius: 50%; top: 60px; right: 60px; box-shadow: 0 0 40px white; opacity: 0.8;
+        }
+        /* SILUETA DE PAREJA CORREGIDA */
+        .pareja-silueta {
+            position: absolute; bottom: 0; width: 100%; height: 50vh;
+            background: url('https://i.ibb.co/Lz007fL/couple-silhouette.png') no-repeat center bottom;
+            background-size: contain; opacity: 0.5; z-index: 1; pointer-events: none;
+        }
+        .lluvia {
+            position: absolute; width: 2px; height: 15px; background: rgba(255,255,255,0.4);
+            animation: caer 1.2s linear infinite;
+        }
+        @keyframes caer { from { transform: translateY(-100vh); } to { transform: translateY(100vh); } }
+        .btn {
+            padding: 15px 40px; border: none; border-radius: 40px; font-size: 20px;
+            background: white; color: #ff3366; cursor: pointer; z-index: 10;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2); text-decoration: none; font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div id="inicio">
+        <div class="luna"></div>
+        <div class="pareja-silueta"></div>
+        <h1 style="z-index: 10; text-shadow: 2px 2px 5px rgba(0,0,0,0.1);">Te tengo un regalo Liz...</h1>
+        <a href="index.html" class="btn">Abrir ❤️</a>
+    </div>
+    <script>
+        for(let i=0; i<60; i++) {
+            let l = document.createElement("div");
+            l.className = "lluvia";
+            l.style.left = Math.random() * 100 + "%";
+            l.style.animationDuration = (Math.random() + 0.8) + "s";
+            document.getElementById("inicio").appendChild(l);
+        }
+    </script>
+</body>
+</html>
