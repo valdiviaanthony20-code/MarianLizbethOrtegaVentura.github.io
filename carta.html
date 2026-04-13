@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para Liz ❤️</title>
+    <style>
+        body { margin: 0; padding: 0; background: #f3e9e2; font-family: 'Courier New', monospace; overflow: hidden; height: 100vh; }
+        .pasto { position: absolute; bottom: 0; width: 100%; height: 70px; background: linear-gradient(to bottom, #76a376, #4d7c4d); z-index: 5; border-top: 3px solid #5d8a5d; }
+        /* Briznas de pasto */
+        .pasto::after { content: ''; position: absolute; top: -10px; left: 0; width: 100%; height: 10px; background-image: repeating-linear-gradient(90deg, #76a376, #76a376 2px, transparent 2px, transparent 8px); }
+        
+        .contenedor { display: flex; width: 100%; height: 100%; position: relative; z-index: 10; }
+        .col-texto { flex: 1.2; padding: 30px; display: flex; flex-direction: column; justify-content: center; }
+        #typing { font-size: 15px; color: #333; line-height: 1.4; white-space: pre-wrap; height: 400px; overflow-y: auto; }
+        .contador { color: #ff4d6d; font-size: 17px; font-weight: bold; margin-top: 15px; }
+
+        .col-arbol { flex: 0.8; position: relative; display: flex; justify-content: center; align-items: flex-end; padding-bottom: 70px; }
+        canvas { position: absolute; bottom: 70px; z-index: 15; }
+
+        .hoja-caida { position: absolute; z-index: 20; animation: caerHojas 4s linear infinite; }
+        @keyframes caerHojas { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(500px) rotate(360deg); opacity: 0; } }
+    </style>
+</head>
+<body onclick="iniciar()">
+    <audio id="musica" loop><source src="Perfect.mp3" type="audio/mpeg"></audio>
+    <div class="pasto"></div>
+    <div class="contenedor">
+        <div class="col-texto">
+            <div id="typing"></div>
+            <div id="reloj" class="contador"></div>
+        </div>
+        <div class="col-arbol" id="zona">
+            <canvas id="canvas"></canvas>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 400; canvas.height = 450;
+
+        const mensaje = "Para el amor de mi vida, mi Liz:\n\nNo existen palabras suficientes para decirte lo mucho que te amo, pero esta pequeña página es un pedacito de mi corazón para ti. Si pudiera elegir un lugar seguro en todo el universo, sería siempre a tu lado, porque eres tú quien ilumina mis días y me motiva a ser mejor cada mañana.\n\nCuanto más tiempo paso contigo, más me doy cuenta de que eres el regalo más hermoso que la vida me ha dado. No importa cuántos años, días o segundos pasen; mi apoyo, mi ternura y mis ganas de verte cumplir cada uno de tus sueños estarán aquí, firmes, siempre para ti.\n\nEste contador no solo marca el tiempo, marca cada latido de mi corazón que te pertenece desde el primer día. Eres mi presente y quiero que seas siempre mi futuro.\n\nTe amo mucho amor de mi vida.\n\nMLOV";
+
+        let empezo = false;
+        function iniciar() {
+            if(empezo) return;
+            empezo = true;
+            document.getElementById('musica').play();
+            drawBranch(200, 450, 80, -Math.PI / 2, 12);
+            escribir();
+            setInterval(reloj, 1000);
+            setInterval(llover, 400);
+        }
+
+        function drawBranch(x, y, len, angle, width) {
+            ctx.beginPath();
+            ctx.save();
+            ctx.strokeStyle = "#4d342c";
+            ctx.lineWidth = width;
+            ctx.lineCap = "round";
+            ctx.translate(x, y);
+            ctx.rotate(angle);
+            ctx.moveTo(0, 0);
+            ctx.lineTo(0, -len);
+            ctx.stroke();
+
+            if (len < 10) {
+                const colores = ["#ff4d6d", "#ff758f", "#c9184a", "#ffb3c1"];
+                ctx.fillStyle = colores[Math.floor(Math.random()*colores.length)];
+                ctx.font = "16px Arial";
+                ctx.fillText("❤️", -8, -len);
+                ctx.restore();
+                return;
+            }
+
+            setTimeout(() => {
+                drawBranch(0, -len, len * 0.8, angle + 0.35, width * 0.7);
+                drawBranch(0, -len, len * 0.8, angle - 0.35, width * 0.7);
+            }, 60);
+            ctx.restore();
+        }
+
+        function escribir() {
+            let i = 0;
+            const target = document.getElementById("typing");
+            function t() {
+                if (i < mensaje.length) {
+                    target.innerHTML += mensaje[i] === "\n" ? "<br>" : mensaje[i];
+                    i++; setTimeout(t, 35);
+                }
+            }
+            t();
+        }
+
+        function llover() {
+            const zona = document.getElementById('zona');
+            const h = document.createElement('div');
+            h.className = 'hoja-caida';
+            h.innerHTML = '❤️';
+            h.style.left = (Math.random() * 80 + 10) + '%';
+            h.style.top = '20%';
+            h.style.color = ["#ff4d6d", "#ffb3c1", "#c9184a"][Math.floor(Math.random()*3)];
+            zona.appendChild(h);
+            setTimeout(() => h.remove(), 4000);
+        }
+
+        function reloj() {
+            const diff = new Date() - new Date(2022, 3, 9);
+            const d = Math.floor(diff / 86400000);
+            const h = Math.floor((diff % 86400000) / 3600000);
+            const m = Math.floor((diff % 3600000) / 60000);
+            const s = Math.floor((diff % 60000) / 1000);
+            document.getElementById("reloj").innerHTML = `${d} días ${h}h ${m}m ${s}s`;
+        }
+    </script>
+</body>
+</html>
