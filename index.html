@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para Liz - MLOV</title>
+    <style>
+        body { 
+            margin: 0; padding: 0; 
+            background: linear-gradient(135deg, #ff0055 0%, #ff4d6d 50%, #ff85a1 100%);
+            height: 100vh; display: flex; justify-content: center; align-items: center;
+            font-family: 'Arial', sans-serif; overflow: hidden; color: white;
+        }
+
+        /* Corazones flotantes del video original */
+        .bg-heart {
+            position: absolute; color: rgba(255, 255, 255, 0.4);
+            font-size: 20px; animation: floatUp 8s linear infinite; z-index: 0;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+            50% { opacity: 0.6; }
+            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+        }
+
+        #inicio { text-align: center; z-index: 10; }
+        .btn-abrir { 
+            background: white; color: #ff0055; border: none; padding: 18px 60px; 
+            font-size: 24px; font-weight: bold; border-radius: 50px; cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3); animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+
+        /* Carta blanca del video */
+        #main-card {
+            width: 90%; max-width: 420px; background: #fff5f7; border-radius: 40px;
+            padding: 25px; color: #444; box-shadow: 0 25px 60px rgba(0,0,0,0.4);
+            text-align: center; position: relative; z-index: 5;
+            max-height: 90vh; overflow-y: auto; display: none;
+        }
+
+        /* ÁRBOL IDÉNTICO A LA IMAGEN (250+ corazones) */
+        #tree-container { position: relative; height: 220px; width: 100%; margin-top: 10px; }
+        .trunk { 
+            width: 16px; height: 75px; background: #4e342e; position: absolute; 
+            bottom: 0; left: 50%; transform: translateX(-50%); border-radius: 4px;
+        }
+        .leaf { position: absolute; animation: pop 0.4s ease-out forwards; opacity: 0; }
+        @keyframes pop { from { transform: scale(0); opacity: 0; } to { transform: scale(1.1); opacity: 1; } }
+
+        #typing-text { font-size: 15px; line-height: 1.6; text-align: justify; margin: 15px 0; }
+        
+        /* Contador estilo imagen */
+        #timer-box { 
+            background: white; padding: 12px; border-radius: 20px; 
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.05); margin-top: 10px;
+        }
+        .timer-title { color: #ff0055; font-weight: bold; font-size: 13px; margin-bottom: 5px; }
+        .timer-nums { font-size: 16px; font-weight: bold; color: #333; }
+    </style>
+</head>
+<body>
+
+    <div id="bg-hearts"></div>
+
+    <div id="inicio">
+        <h1>Te tengo un regalo Liz...</h1>
+        <button class="btn-abrir" onclick="comenzar()">Abrir ❤️</button>
+    </div>
+
+    <audio id="musica" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="main-card">
+        <div id="tree-container">
+            <div class="trunk"></div>
+        </div>
+        <div id="typing-text"></div>
+        <div id="timer-box">
+            <div class="timer-title">Mi amor por ti nació hace...</div>
+            <div id="timer" class="timer-nums"></div>
+        </div>
+        <strong style="color: #ff0055; margin-top: 15px; display: block; font-size: 1.1rem;">MLOV</strong>
+    </div>
+
+    <script>
+        // Corazones flotantes del fondo
+        const bg = document.getElementById('bg-hearts');
+        for(let i=0; i<30; i++) {
+            const h = document.createElement('div');
+            h.className = 'bg-heart';
+            h.innerHTML = '❤️';
+            h.style.left = Math.random() * 100 + 'vw';
+            h.style.animationDelay = Math.random() * 8 + 's';
+            bg.appendChild(h);
+        }
+
+        function comenzar() {
+            document.getElementById('inicio').style.display = 'none';
+            document.getElementById('main-card').style.display = 'block';
+            
+            // INTENTO DE REPRODUCCIÓN DE MÚSICA
+            const audio = document.getElementById('musica');
+            audio.play().catch(error => console.log("El navegador bloqueó el audio al inicio"));
+
+            crearArbol();
+            escribir();
+            setInterval(updateTimer, 1000);
+        }
+
+        function crearArbol() {
+            const container = document.getElementById('tree-container');
+            // Generar 280 corazones para que sea SÚPER TUPIDO (IGUAL A LA IMAGEN)
+            for (let i = 0; i < 280; i++) {
+                setTimeout(() => {
+                    const leaf = document.createElement('div');
+                    leaf.className = 'leaf';
+                    const colors = ['#ff0055', '#ff1744', '#f06292', '#d81b60', '#ff4081'];
+                    leaf.style.color = colors[Math.floor(Math.random() * colors.length)];
+                    leaf.innerHTML = '❤️';
+                    
+                    const t = Math.random() * 2 * Math.PI;
+                    const x = 16 * Math.pow(Math.sin(t), 3);
+                    const y = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
+                    
+                    const r = Math.random(); // Factor de relleno interno
+                    leaf.style.left = `calc(50% + ${x * 7.5 * r}px)`;
+                    leaf.style.top = `calc(45% + ${y * 7.5 * r}px)`;
+                    leaf.style.fontSize = (Math.random() * 12 + 10) + 'px';
+                    container.appendChild(leaf);
+                }, i * 12);
+            }
+        }
+
+        function updateTimer() {
+            const inicio = new Date(2022, 3, 9, 12, 0, 0); // 9 Abril 2022
+            const ahora = new Date();
+            const diff = ahora - inicio;
+            const años = Math.floor(diff / (1000 * 60 * 60 * 24 * 365.25));
+            const dias = Math.floor((diff / (1000 * 60 * 60 * 24)) % 365.25);
+            const horas = Math.floor((diff / (1000 * 60 * 60)) % 24);
+            const mins = Math.floor((diff / (1000 * 60)) % 60);
+            const segs = Math.floor((diff / 1000) % 60);
+            document.getElementById('timer').innerHTML = `${años} años, ${dias} días, ${horas}h ${mins}m ${segs}s`;
+        }
+
+        const msg = "Para el amor de mi vida, mi Liz: \n\nNo existen palabras suficientes para decirte lo mucho que te amo. Si pudiera elegir un lugar seguro en todo el universo, sería siempre a tu lado, porque eres tú quien ilumina mis días. No importa cuántos años pasen; mi apoyo y mis ganas de verte cumplir tus sueños estarán aquí, siempre para ti.\n\nEste contador marca cada latido de mi corazón que te pertenece.\n\nTe amo mucho amor de mi vida.";
+
+        let idx = 0;
+        function escribir() {
+            if (idx < msg.length) {
+                const c = msg.charAt(idx);
+                document.getElementById('typing-text').innerHTML += c === "\n" ? "<br>" : c;
+                idx++;
+                setTimeout(escribir, 40);
+            }
+        }
+    </script>
+</body>
+</html>
