@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para Liz ❤️</title>
+    <style>
+        body { 
+            margin: 0; padding: 0; background-color: #f3e9e2; 
+            font-family: 'Courier New', Courier, monospace; 
+            overflow: hidden; height: 100vh;
+        }
+
+        /* PASTO ESTILIZADO Y DIBUJADO */
+        .pasto {
+            position: fixed; bottom: 0; width: 100%; height: 70px;
+            background-color: #a8d5a8; /* Verde plano y limpio */
+            border-top: 4px solid #7cb37c; /* Línea de borde más oscura */
+            z-index: 10;
+        }
+
+        .contenedor { display: flex; width: 100%; height: 100%; position: relative; z-index: 5; }
+
+        /* TEXTO COMPLETO Y NO CORTADO */
+        .col-texto { flex: 1.2; padding: 30px; display: flex; flex-direction: column; justify-content: center; }
+        #typing { font-size: 15px; color: #333; line-height: 1.5; white-space: pre-wrap; height: 420px; overflow-y: auto; text-align: left; }
+        .contador { color: #ff4d6d; font-size: 18px; font-weight: bold; margin-top: 15px; }
+
+        .col-arbol { flex: 0.8; position: relative; display: flex; justify-content: center; align-items: flex-end; padding-bottom: 70px; }
+
+        /* SEMILLA DESDE ARRIBA */
+        .semilla {
+            position: absolute; width: 12px; height: 12px; background: #ff4d6d; border-radius: 50%;
+            top: -50px; left: 50%; transform: translateX(-50%);
+            animation: caer 1.5s ease-in forwards;
+        }
+        @keyframes caer { to { top: calc(100% - 80px); opacity: 0; } }
+
+        /* TRONCO ESTILIZADO */
+        .tronco {
+            position: absolute; bottom: 70px; width: 12px; height: 0;
+            background: #6d4c41; border-radius: 6px 6px 0 0;
+            transition: height 2s ease-out 1.5s;
+        }
+
+        /* RAMAS Y HOJAS (ESTILO DIBUJO) */
+        canvas { position: absolute; bottom: 70px; z-index: 15; }
+
+        .lluvia-corazones {
+            position: absolute; font-size: 14px; top: -20px;
+            animation: caerHojas 5s linear infinite;
+        }
+        @keyframes caerHojas {
+            0% { transform: translateY(0) rotate(0); opacity: 0; }
+            10% { opacity: 1; }
+            100% { transform: translateY(600px) rotate(360deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body onclick="empezarRegalo()">
+    <audio id="musica" loop><source src="Perfect.mp3" type="audio/mpeg"></audio>
+
+    <div class="contenedor">
+        <div class="col-texto">
+            <div id="typing"></div>
+            <div id="reloj" class="contador"></div>
+        </div>
+        <div class="col-arbol" id="zona-arbol">
+            <div class="semilla"></div>
+            <div id="tronco" class="tronco"></div>
+            <canvas id="canvas"></canvas>
+        </div>
+    </div>
+    <div class="pasto"></div>
+
+    <script>
+        const mensaje = "Para el amor de mi vida, mi Liz:\n\nNo existen palabras suficientes para decirte lo mucho que te amo, pero esta pequeña página es un pedacito de mi corazón para ti. Si pudiera elegir un lugar seguro en todo el universo, sería siempre a tu lado, porque eres tú quien ilumina mis días y me motiva a ser mejor cada mañana.\n\nCuanto más tiempo paso contigo, más me doy cuenta de que eres el regalo más hermoso que la vida me ha dado. No importa cuántos años, días o segundos pasen; mi apoyo, mi ternura y mis ganas de verte cumplir cada uno de tus sueños estarán aquí, firmes, siempre para ti.\n\nEste contador no solo marca el tiempo, marca cada latido de mi corazón que te pertenece desde el primer día. Eres mi presente y quiero que seas siempre mi futuro.\n\nTe amo mucho amor de mi vida.\n\nMLOV";
+
+        let yaInicio = false;
+        function empezarRegalo() {
+            if(yaInicio) return;
+            yaInicio = true;
+            
+            // 1. Música y Texto
+            document.getElementById('musica').play();
+            escribir();
+            setInterval(actualizarReloj, 1000);
+
+            // 2. Crecer Árbol
+            document.getElementById('tronco').style.height = '180px';
+            setTimeout(crearCopa, 2500);
+            
+            // 3. Lluvia de Corazones
+            setInterval(lloverHojas, 500);
+        }
+
+        function escribir() {
+            let i = 0;
+            const caja = document.getElementById("typing");
+            function type() {
+                if (i < mensaje.length) {
+                    caja.innerHTML += mensaje[i] === "\n" ? "<br>" : mensaje[i];
+                    i++; setTimeout(type, 40);
+                }
+            }
+            type();
+        }
+
+        function crearCopa() {
+            // Copa de corazones simple y estilizada (sin canvas complicado)
+            const zona = document.getElementById('zona-arbol');
+            for(let i=0; i<150; i++) {
+                setTimeout(() => {
+                    const h = document.createElement('div');
+                    h.className = 'lluvia-corazones'; h.style.animation = 'aparecer 1s forwards'; h.innerHTML = '❤️';
+                    const t = Math.random() * 2 * Math.PI;
+                    const r = Math.sqrt(Math.random()) * 100;
+                    const x = 16 * Math.pow(Math.sin(t), 3);
+                    const y = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
+                    h.style.left = `calc(50% + ${x * (r/12)}px)`;
+                    h.style.bottom = `calc(180px + ${-y * (r/12)}px)`;
+                    zona.appendChild(h);
+                }, i * 15);
+            }
+        }
+
+        function lloverHojas() {
+            const zona = document.getElementById('zona-arbol');
+            const c = document.createElement('div');
+            c.className = 'lluvia-corazones'; c.innerHTML = '❤️';
+            c.style.left = Math.random() * 100 + '%';
+            zona.appendChild(c);
+            setTimeout(() => c.remove(), 5000);
+        }
+
+        function actualizarReloj() {
+            const diff = new Date() - new Date(2022, 3, 9);
+            const d = Math.floor(diff / 86400000);
+            const h = Math.floor((diff / 3600000) % 24);
+            const m = Math.floor((diff / 60000) % 60);
+            const s = Math.floor((diff / 1000) % 60);
+            document.getElementById("reloj").innerHTML = `${d} días ${h}h ${m}m ${s}s`;
+        }
+    </script>
+</body>
+</html>
