@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para Liz ❤️</title>
+    <style>
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; font-family: 'Arial', sans-serif; }
+        
+        #pantalla-inicio {
+            position: fixed; width: 100%; height: 100%;
+            background: url('Pareja.png') no-repeat center center/cover;
+            display: flex; justify-content: center; align-items: center; z-index: 100;
+        }
+
+        .boton-abrir {
+            padding: 15px 40px; font-size: 1.5rem; background: #ff4757;
+            color: white; border: none; border-radius: 50px; cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3); transition: 0.3s;
+        }
+
+        #escena-final {
+            position: relative; width: 100%; height: 100%;
+            background: url('Fondo.png') no-repeat center center/cover;
+            display: none;
+        }
+
+        #canvas-arbol { position: absolute; top: 0; left: 0; z-index: 5; }
+
+        #contenedor-texto {
+            position: absolute; top: 10%; left: 5%; width: 40%;
+            color: #5d4037; font-size: 1.1rem; line-height: 1.5; z-index: 10;
+            text-align: justify; font-weight: bold; text-shadow: 1px 1px 1px rgba(255,255,255,0.5);
+        }
+
+        #contenedor-contador {
+            position: absolute; bottom: 8%; left: 5%;
+            color: #5d4037; font-size: 1.3rem; z-index: 10; font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <audio id="musica" src="Perfect.mp3" loop></audio>
+
+    <div id="pantalla-inicio">
+        <button class="boton-abrir" onclick="iniciarRegalo()">Abrir ❤️</button>
+    </div>
+
+    <div id="escena-final">
+        <div id="contenedor-texto"></div>
+        <div id="contenedor-contador">
+            <div>Mi amor por ti nació hace...</div>
+            <div id="reloj"></div>
+        </div>
+        <canvas id="canvas-arbol"></canvas>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas-arbol');
+        const ctx = canvas.getContext('2d');
+        const musica = document.getElementById('musica');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const textoParaLiz = "Para el amor de mi vida, mi Liz:\n\nNo existen palabras suficientes para decirte lo mucho que te amo, pero esta pequeña página es un pedacito de mi corazón para ti. Si pudiera elegir un lugar seguro en todo el universo, sería siempre a tu lado, porque eres tú quien ilumina mis días y me motiva a ser mejor cada mañana.\n\nCuanto más tiempo paso contigo, más me doy cuenta de que eres el regalo más hermoso que la vida me ha dado. No importa cuántos años, días o segundos pasen; mi apoyo, mi ternura y mis ganas de verte cumplir cada uno de tus sueños estarán aquí, firmes, siempre para ti.\n\nEste contador no solo marca el tiempo, marca cada latido de mi corazón que te pertenece desde el primer día. Eres mi presente y quiero que seas siempre mi futuro.\n\nTe amo mucho amor de mi vida.\n\nMLOV";
+
+        // CONFIGURA AQUÍ TU FECHA (Año, Mes[0-11], Día, Hora, Min)
+        // Puse hace 4 años exactos como base
+        const fechaInicio = new Date(2022, 3, 13, 15, 0, 0); 
+
+        function iniciarRegalo() {
+            document.getElementById('pantalla-inicio').style.display = 'none';
+            document.getElementById('escena-final').style.display = 'block';
+            musica.play();
+            animarSemilla();
+        }
+
+        function animarSemilla() {
+            let y = -20;
+            let x = canvas.width * 0.75;
+            // La línea negra en tu imagen está aprox al 75% de la altura
+            let lineaNegra = canvas.height * 0.78; 
+
+            function caer() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "#6d4c41";
+                ctx.beginPath();
+                ctx.arc(x, y, 5, 0, Math.PI * 2);
+                ctx.fill();
+                y += 5;
+
+                if (y < lineaNegra) {
+                    requestAnimationFrame(caer);
+                } else {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    iniciarArbol(x, lineaNegra);
+                    escribirTexto();
+                    actualizarReloj();
+                }
+            }
+            caer();
+        }
+
+        let ramas = [];
+        let hojas = [];
+        function iniciarArbol(x, y) {
+            function dibujarRama(x1, y1, len, angle, branchWidth) {
+                ctx.beginPath();
+                ctx.save();
+                ctx.strokeStyle = "#4b2e1e";
+                ctx.lineWidth = branchWidth;
+                ctx.translate(x1, y1);
+                ctx.rotate(angle * Math.PI / 180);
+                ctx.moveTo(0, 0);
+                ctx.lineTo(0, -len);
+                ctx.stroke();
+
+                if (len < 10) {
+                    hojas.push({x: x1, y: y1, color: `hsl(${Math.random()*360}, 70%, 60%)`});
+                    ctx.restore();
+                    return;
+                }
+
+                setTimeout(() => {
+                    dibujarRama(0, -len, len * 0.8, angle - 20, branchWidth * 0.7);
+                    dibujarRama(0, -len, len * 0.8, angle + 20, branchWidth * 0.7);
+                }, 50);
+                ctx.restore();
+            }
+            dibujarRama(x, y, 100, 0, 10);
+            animarHojas();
+        }
+
+        let hojasCayendo = [];
+        function animarHojas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // Redibujar tronco estático aquí simplificado o mantenerlo
+            
+            if (hojas.length > 0) {
+                hojas.forEach(h => {
+                    dibujarCorazon(h.x, h.y, h.color, 8);
+                    if (Math.random() < 0.01) {
+                        hojasCayendo.push({...h, cy: h.y, cx: h.x});
+                    }
+                });
+            }
+
+            hojasCayendo.forEach((h, i) => {
+                h.cy += 2;
+                h.cx += Math.sin(h.cy / 20);
+                dibujarCorazon(h.cx, h.cy, h.color, 8);
+                if (h.cy > canvas.height) hojasCayendo.splice(i, 1);
+            });
+
+            requestAnimationFrame(animarHojas);
+        }
+
+        function dibujarCorazon(x, y, color, size) {
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.bezierCurveTo(x, y-3, x-5, y-3, x-5, y);
+            ctx.bezierCurveTo(x-5, y+3, x, y+5, x, y+7);
+            ctx.bezierCurveTo(x, y+5, x+5, y+3, x+5, y);
+            ctx.bezierCurveTo(x+5, y-3, x, y-3, x, y);
+            ctx.fill();
+        }
+
+        function escribirTexto() {
+            let i = 0;
+            const contenedor = document.getElementById('contenedor-texto');
+            function escribir() {
+                if (i < textoParaLiz.length) {
+                    contenedor.innerHTML += textoParaLiz.charAt(i) === '\n' ? '<br>' : textoParaLiz.charAt(i);
+                    i++;
+                    setTimeout(escribir, 40);
+                }
+            }
+            escribir();
+        }
+
+        function actualizarReloj() {
+            const ahora = new Date();
+            let diff = ahora - fechaInicio;
+
+            let anos = Math.floor(diff / (1000 * 60 * 60 * 24 * 365));
+            diff -= anos * (1000 * 60 * 60 * 24 * 365);
+            let dias = Math.floor(diff / (1000 * 60 * 60 * 24));
+            diff -= dias * (1000 * 60 * 60 * 24);
+            let horas = Math.floor(diff / (1000 * 60 * 60));
+            diff -= horas * (1000 * 60 * 60);
+            let mins = Math.floor(diff / (1000 * 60));
+            diff -= mins * (1000 * 60);
+            let secs = Math.floor(diff / 1000);
+
+            document.getElementById('reloj').innerHTML = `${anos} años ${dias} días ${horas} horas ${mins} minutos ${secs} segundos`;
+            setTimeout(actualizarReloj, 1000);
+        }
+    </script>
+</body>
+</html>
