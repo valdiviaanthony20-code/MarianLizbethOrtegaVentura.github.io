@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para Liz</title>
+    <style>
+        body { background-color: #ffdae0; text-align: center; font-family: 'Arial', sans-serif; color: #d84343; margin: 0; padding: 20px; }
+        .heart { font-size: 60px; cursor: pointer; animation: heartbeat 1.2s infinite; margin-top: 50px; }
+        @keyframes heartbeat { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+        .hidden { display: none; }
+        #timer { font-size: 24px; font-weight: bold; margin: 20px 0; }
+        .carta-box { background: white; padding: 30px; border-radius: 20px; margin: 20px auto; max-width: 500px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); line-height: 1.6; min-height: 100px; }
+    </style>
+</head>
+<body>
+    <div id="inicio">
+        <div class="heart" onclick="comenzar()">❤️</div>
+        <p>Toca el corazón, Liz</p>
+    </div>
+
+    <div id="contenido" class="hidden">
+        <div id="timer"></div>
+        <div class="carta-box">
+            <p id="typing-text"></p>
+        </div>
+    </div>
+
+    <script>
+        function comenzar() {
+            document.getElementById('inicio').classList.add('hidden');
+            document.getElementById('contenido').classList.remove('hidden');
+            typeWriter();
+            setInterval(updateTimer, 1000);
+        }
+
+        // FECHA DE INICIO: (Año, Mes-1, Día) 
+        // Ejemplo: 1 de diciembre de 2025 es (2025, 11, 1)
+        const fechaInicio = new Date(2025, 11, 1); 
+
+        function updateTimer() {
+            const ahora = new Date();
+            const diff = ahora - fechaInicio;
+            const dias = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const horas = Math.floor((diff / (1000 * 60 * 60)) % 24);
+            const mins = Math.floor((diff / (1000 * 60)) % 60);
+            const segs = Math.floor((diff / 1000) % 60);
+            document.getElementById('timer').innerHTML = `Llevamos juntos:<br>${dias}d ${horas}h ${mins}m ${segs}s`;
+        }
+
+        const message = "Liz, quería darte una sorpresa... Sé que estás esforzándote mucho con tus estudios y quería que tuvieras un lugar especial para nosotros. Te quiero mucho."; 
+
+        let i = 0;
+        function typeWriter() {
+            if (i < message.length) {
+                document.getElementById('typing-text').innerHTML += message.charAt(i);
+                i++;
+                setTimeout(typeWriter, 50);
+            }
+        }
+    </script>
+</body>
+</html>
