@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Para Liz ❤️</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,600&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body, html { width: 100%; height: 100%; overflow: hidden; background-color: #000; }
+        
+        #pantalla-inicio {
+            position: fixed; width: 100%; height: 100%;
+            background: url('Pareja.png') no-repeat center center/cover;
+            display: flex; justify-content: center; align-items: center; z-index: 100;
+        }
+
+        .boton-abrir {
+            padding: 15px 45px; font-size: 1.6rem; background: #ff4d6d;
+            color: white; border: none; border-radius: 50px; cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3); font-weight: bold;
+        }
+
+        #escena-final {
+            position: relative; width: 100%; height: 100%;
+            background: url('Fondo.png') no-repeat center center/cover;
+            display: none;
+        }
+
+        #canvas-arbol { position: absolute; top: 0; left: 0; z-index: 5; pointer-events: none; }
+
+        #contenedor-texto {
+            position: absolute; top: 3%; left: 7%; width: 62%;
+            color: #000000;
+            font-family: 'Playfair Display', serif;
+            font-size: 0.8rem; line-height: 1.25; z-index: 10;
+            text-align: left; font-weight: 600;
+        }
+
+        #contenedor-contador {
+            position: absolute; bottom: 4%; left: 8%; right: 8%;
+            color: #000000; z-index: 10;
+        }
+
+        #mensaje-reloj { font-size: 0.9rem; font-weight: bold; margin-bottom: 2px; font-family: 'Playfair Display', serif; }
+        #reloj { font-size: 1rem; font-weight: 800; font-family: 'Arial', sans-serif; display: block; line-height: 1.2; }
+
+        @media screen and (max-width: 400px) {
+            #reloj { font-size: 0.85rem; }
+            #contenedor-texto { width: 72%; font-size: 0.68rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <audio id="musica" src="Perfect.mp3" loop></audio>
+
+    <div id="pantalla-inicio">
+        <button class="boton-abrir" onclick="iniciar()">Abrir ❤️</button>
+    </div>
+
+    <div id="escena-final">
+        <div id="contenedor-texto"></div>
+        <div id="contenedor-contador">
+            <div id="mensaje-reloj">Mi amor por ti comenzó hace...</div>
+            <div id="reloj"></div>
+        </div>
+        <canvas id="canvas-arbol"></canvas>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas-arbol');
+        const ctx = canvas.getContext('2d');
+        const musica = document.getElementById('musica');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const textoCarta = "Para el amor de mi vida, mi Liz:\nNo existen palabras suficientes para decirte lo mucho que te amo, pero esta pequeña página es un pedacito de mi corazón para ti. Si pudiera elegir un lugar seguro en todo el universo, sería siempre a tu lado, porque eres tú quien ilumina mis días y me motiva a ser mejor cada mañana.\n\nCuanto más tiempo paso contigo, más me doy cuenta de que eres el regalo más hermoso que la vida me ha dado. No importa cuántos años, días o segundos pasen; mi apoyo, mi ternura y mis ganas de verte cumplir cada uno de tus sueños estarán aquí, firmes, siempre para ti.\n\nEste contador no solo marca el tiempo, marca cada latido de mi corazón que te pertenece desde el primer día. Eres mi presente y quiero que seas siempre mi futuro. Sé que la vida nos ha puesto en caminos distintos por un tiempo, pero valoro muchísimo que hoy estemos aquí, intentándolo de nuevo desde la sinceridad y la amistad. Solo quiero disfrutar de volver a conocerte, de nuestras pláticas y de reconstruir poco a poco lo que eramos. Gracias por permitirme estar cerca de ti otra vez; para mí, cada segundo que compartimos ahora es una nueva oportunidad para demostrarte lo especial que sigues siendo en mi vida...y que esta vez...dare todo de mi desde el inicio <3 espero te haya gustado.\n\nTe amo mucho amor de mi vida.\nMLOV";
+
+        const fechaInicio = new Date(2022, 3, 10, 15, 0, 0); 
+        let corazonesCayendo = [];
+
+        function iniciar() {
+            document.getElementById('pantalla-inicio').style.display = 'none';
+            document.getElementById('escena-final').style.display = 'block';
+            musica.play();
+            animarSemilla();
+        }
+
+        const delay = (ms) => new Promise(res => setTimeout(res, ms));
+
+        function animarSemilla() {
+            let y = -20;
+            let x = canvas.width * 0.80; 
+            let suelo = canvas.height * 0.85; 
+            function caer() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "#ff4d6d";
+                ctx.beginPath(); ctx.arc(x, y, 6, 0, Math.PI * 2); ctx.fill();
+                y += 8;
+                if (y < suelo) { requestAnimationFrame(caer); } 
+                else { 
+                    actualizarReloj();
+                    escribirTexto();
+                    crecerArbol(x, suelo); 
+                }
+            }
+            caer();
+        }
+
+        async function crecerArbol(startX, startY) {
+            const h = canvas.height;
+            const trunkHeight = h * 0.26; 
+            const baseWidth = 28; 
+
+            for (let i = 0; i <= trunkHeight; i += 3) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "#5d4037"; 
+                ctx.beginPath();
+                ctx.moveTo(startX - baseWidth + (i * 0.09), startY); 
+                ctx.lineTo(startX + baseWidth - (i * 0.09), startY); 
+                ctx.lineTo(startX + 3, startY - i);      
+                ctx.lineTo(startX - 3, startY - i);      
+                ctx.closePath();
+                ctx.fill();
+                await delay(10);
+            }
+            
+            const trunkTopY = startY - trunkHeight;
+
+            function dibujarRama(x1, y1, x2, y2) {
+                ctx.beginPath();
+                ctx.strokeStyle = "#5d4037";
+                ctx.lineWidth = 4;
+                ctx.lineCap = "round";
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.stroke();
+            }
+
+            dibujarRama(startX, trunkTopY, startX - 55, trunkTopY - 65);
+            await delay(150);
+            dibujarRama(startX, trunkTopY, startX + 55, trunkTopY - 65);
+            await delay(150);
+            dibujarRama(startX, trunkTopY, startX, trunkTopY - 80);
+
+            dibujarCopaCorazon(startX, trunkTopY - 70, startY); 
+        }
+
+        function dibujarCopaCorazon(centerX, centerY, sueloY) {
+            const numCorazones = 1800; 
+            let corazonesArbol = [];
+            const escalaCopa = 12.5; 
+
+            for (let i = 0; i < numCorazones; i++) {
+                const t = Math.random() * Math.PI * 2;
+                const x = 16 * Math.pow(Math.sin(t), 3);
+                const y = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
+                
+                let r = Math.random();
+                if (r > 0.6) r = Math.random() * 0.6; 
+                
+                const posX = centerX + x * escalaCopa * r;
+                const posY = centerY + y * escalaCopa * r;
+                const hue = Math.random() * 45 + 325; 
+                corazonesArbol.push({ x: posX, y: posY, s: Math.random() * 7 + 2, c: `hsl(${hue}, 100%, ${Math.random() * 30 + 40}%)` });
+            }
+
+            let idx = 0;
+            function animarCopa() {
+                if (idx < corazonesArbol.length) {
+                    for(let j=0; j<30; j++) {
+                        if(idx < corazonesArbol.length) {
+                            const p = corazonesArbol[idx];
+                            drawHeart(p.x, p.y, p.s, p.c);
+                            idx++;
+                        }
+                    }
+                    requestAnimationFrame(animarCopa);
+                } else {
+                    setInterval(() => crearCorazonCayendo(centerX, centerY, sueloY), 180);
+                    loopCorazonesCayendo(corazonesArbol);
+                }
+            }
+            animarCopa();
+        }
+
+        function drawHeart(x, y, s, c) {
+            ctx.fillStyle = c;
+            ctx.beginPath(); ctx.moveTo(x, y);
+            ctx.bezierCurveTo(x, y-s/2, x-s, y-s/2, x-s, y);
+            ctx.bezierCurveTo(x-s, y+s/2, x, y+s, x, y+s*1.2);
+            ctx.bezierCurveTo(x, y+s, x+s, y+s/2, x+s, y);
+            ctx.bezierCurveTo(x+s, y-s/2, x, y-s/2, x, y);
+            ctx.fill();
+        }
+
+        function crearCorazonCayendo(centerX, centerY, sueloY) {
+            const hue = Math.random() * 40 + 330;
+            corazonesCayendo.push({
+                x: centerX + (Math.random() - 0.5) * 160,
+                y: centerY + (Math.random() - 0.5) * 80,
+                s: Math.random() * 5 + 3,
+                v: Math.random() * 1.8 + 0.8,
+                c: `hsl(${hue}, 100%, 65%)`,
+                suelo: sueloY + (Math.random() * 25)
+            });
+        }
+
+        function loopCorazonesCayendo(corazonesArbol) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = "#5d4037";
+            const startX = canvas.width * 0.80;
+            const sueloY = canvas.height * 0.85;
+            const trunkHeight = canvas.height * 0.26;
+            const baseWidth = 28;
+            ctx.beginPath();
+            ctx.moveTo(startX - baseWidth + (trunkHeight * 0.09), sueloY); 
+            ctx.lineTo(startX + baseWidth - (trunkHeight * 0.09), sueloY); 
+            ctx.lineTo(startX + 3, sueloY - trunkHeight);      
+            ctx.lineTo(startX - 3, sueloY - trunkHeight);      
+            ctx.closePath(); ctx.fill();
+
+            corazonesArbol.forEach(p => drawHeart(p.x, p.y, p.s, p.c));
+
+            for (let i = corazonesCayendo.length - 1; i >= 0; i--) {
+                const p = corazonesCayendo[i];
+                p.y += p.v;
+                p.x += Math.sin(p.y / 25) * 0.6;
+                drawHeart(p.x, p.y, p.s, p.c);
+                if (p.y > p.suelo) corazonesCayendo.splice(i, 1);
+            }
+            requestAnimationFrame(() => loopCorazonesCayendo(corazonesArbol));
+        }
+
+        function escribirTexto() {
+            let i = 0;
+            const div = document.getElementById('contenedor-texto');
+            function t() {
+                if (i < textoCarta.length) {
+                    div.innerHTML += textoCarta.charAt(i) === '\n' ? '<br>' : textoCarta.charAt(i);
+                    i++; setTimeout(t, 28);
+                }
+            }
+            t();
+        }
+
+        function actualizarReloj() {
+            const diff = new Date() - fechaInicio;
+            const a = Math.floor(diff / (1000*60*60*24*365.25));
+            const d = Math.floor((diff / (1000*60*60*24)) % 365.25);
+            const h = Math.floor((diff / (1000*60*60)) % 24);
+            const m = Math.floor((diff / (1000*60)) % 60);
+            const s = Math.floor((diff / 1000) % 60);
+            document.getElementById('reloj').innerHTML = `${a} años, ${d} días, ${h} horas, ${m} minutos y ${s} segundos`;
+            setTimeout(actualizarReloj, 1000);
+        }
+    </script>
+</body>
+</html>
